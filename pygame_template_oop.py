@@ -1,8 +1,8 @@
 import pygame
 import sys
 import random
-ROWS = 10
-COLS = 19
+ROWS = 14
+COLS = 20
 
 
 class Game:
@@ -15,7 +15,7 @@ class Game:
         self.is_running = True
         self.screen_width = pygame.display.get_surface().get_size()[0]
         self.screen_height = pygame.display.get_surface().get_size()[1]
-        self.cell_size = min(self.screen_width//ROWS, self.screen_height//COLS) + 10
+        self.cell_size = min(self.screen_width//ROWS, self.screen_height//COLS)
         self.cell_surf = pygame.Surface((self.cell_size, self.cell_size))
         self.cells = [
             [Cell(y=row, x=col, image=self.cell_surf) for col in range(COLS)]
@@ -32,20 +32,18 @@ class Game:
                     self.is_running = False
 
     def render_cell(self):
-        r = 0
-        g = 0
-        b = 0
         for row in self.cells:
             for cell in row:
-                r += 1
-                g += 1
-                b += 1
-                cell.image.fill((r, g, b))
+                cell.image.fill((30, 30, 30))
                 self.screen.blit(
                     self.cell_surf,
                     (
-                        cell.x * self.cell_size + ((self.screen_height - (self.cell_size * ROWS)) // 2),
-                        cell.y * self.cell_size - ((self.screen_height - (self.cell_size * COLS)) // 2)
+cell.x * self.cell_size + (
+    (self.screen_width - (self.cell_size*COLS) - (cell.x * self.cell_size//10)
+     ) // 2) + (cell.x * self.cell_size//10),
+cell.y * self.cell_size + (
+    (self.screen_height - (self.cell_size*ROWS) - (cell.y * self.cell_size//10)
+     ) // 2) + (cell.y * self.cell_size//10)
                      )
                      )
 
@@ -54,7 +52,7 @@ class Game:
         pass
 
     def render(self):
-        self.screen.fill((255, 255, 255))
+        self.screen.fill((10, 50, 25))
         self.render_cell()
 
         # Render game elements here
