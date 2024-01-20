@@ -17,9 +17,16 @@ class Game():
     включает в себя игровой цикл и обновление поля
     """
     def __init__(self) -> None:
-        self.field = Field()
+        pygame.init()
+        self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        self.screen
+        pygame.display.set_caption("Pygame OOP Template")
+        self.clock = pygame.time.Clock()
         self.tableofrecord = TableOfRecords(filename='records.txt')
-        self.game_run = True
+        self.screen_width = pygame.display.get_surface().get_size()[0]
+        self.screen_height = pygame.display.get_surface().get_size()[1]
+        self.cell_size = min(self.screen_width//variables.ROWS, self.screen_height//variables.COLS)
+        self.cell_surf = pygame.Surface((self.cell_size, self.cell_size))
 
     def menu(self) -> None:
         """Меню игры"""
@@ -90,24 +97,20 @@ class Game():
             )
         self.pause()
 
-    def show_the_update_screen(self) -> None:
-        """прорисовка поля и обновление параметров"""
+    def update_parametrs(self) -> None:
+        """обновление параметров"""
+
         if self.field.ants:
             for ant in self.field.ants:
                 ant.moving(self)
         for anthill in self.field.anthills:
             anthill.spawn_ants(self)
+
         for row in self.field.cells:
             for col in row:
                 col.cell_updater(self)
-                print(col.content, end=' ')
-            print()
+
         self.field.get_empty_cells(self)
-        print(
-            "\n набранно очков:"
-            f"{self.field.score_points}/{self.field.quantity_ants}"
-            "\n "
-            )
 
     def moving_the_player(self, key) -> None:
         """движение игрока при помощи кнопок"""
@@ -218,43 +221,6 @@ class Game():
             name = name + ALPHABET[letter]
         return name
 
-    def start_game(self) -> None:
-        """подготовка и начало игры"""
-        self.field.creating_a_field()
-        self.field.create_anthills(self)
-        self.full_verification()
-        self.show_the_update_screen()
-        while self.game_run:
-            if len(self.field.ants) <= 0:
-                self.end_the_game()
-                break
-            key = keyboard.read_event()
-            if key.event_type == keyboard.KEY_DOWN:
-                self.moving_the_player(key)
-            else:
-                continue
-            os.system('cls')
-            self.show_the_update_screen()        
-
-
-class Game_Window:
-    def __init__(self):
-        pygame.init()
-        self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        self.screen
-        pygame.display.set_caption("Pygame OOP Template")
-        self.clock = pygame.time.Clock()
-        self.is_running = True
-        self.screen_width = pygame.display.get_surface().get_size()[0]
-        self.screen_height = pygame.display.get_surface().get_size()[1]
-        self.cell_size = min(self.screen_width//variables.ROWS, self.screen_height//variables.COLS)
-        self.cell_surf = pygame.Surface((self.cell_size, self.cell_size))
-        self.cells = [
-            [Cell(y=row, x=col, image=self.cell_surf) for col in range(variables.COLS)]
-            for row in range(variables.ROWS)
-        ]
-        self.run()
-
     def handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -264,44 +230,47 @@ class Game_Window:
                     self.is_running = False
 
     def render_cell(self):
-        for row in self.cells:
+        for row in self.field.cells:
             for cell in row:
-                cell.image.fill((30, 30, 30))
+                cell.img.fill(cell.content)
                 self.screen.blit(
-                    self.cell_surf,
-                    (
-cell.x * self.cell_size + (
-    (self.screen_width - (self.cell_size*COLS) - (cell.x * self.cell_size//10)
-     ) // 2) + (cell.x * self.cell_size//10),
-cell.y * self.cell_size + (
-    (self.screen_height - (self.cell_size*ROWS) - (cell.y * self.cell_size//10)
-     ) // 2) + (cell.y * self.cell_size//10)
-                     )
-                     )
-
-    def update(self):
-        # Логика игры
-        pass
+                    self.cell_surf, (cell.x*self.cell_size+((self.screen_width-(self.cell_size*variables.COLS)-(cell.x*self.cell_size//10))//2)+(cell.x*self.cell_size//10), cell.y*self.cell_size+((self.screen_height-(self.cell_size*variables.ROWS)-(cell.y*self.cell_size//10))//2)+(cell.y*self.cell_size//10)))
 
     def render(self):
-        self.screen.fill((10, 50, 25))
+        self.screen.fill((10, 43, 25))
         self.render_cell()
-
-        # Render game elements here
-
         pygame.display.flip()
 
-    def run(self):
-        while self.is_running:
+    def pygame_quit():
+        pygame.quit()
+
+    def start_game(self) -> None:
+        """подготовка и начало игры"""
+        self.field = Field()
+        self.game_run = True
+        self.field.creating_a_field(cell_surf=self.cell_surf)
+        self.field.create_anthills(self)
+        self.full_verification()
+        self.update_parametrs()
+        while self.game_run:
+            print(self.field.anthills)
+            """
+            if len(self.field.ants) <= 0:
+                # self.end_the_game()
+                self.game_run = False
+                pygame.quit()
+                break"""
+            key = keyboard.read_event()
+            if key.event_type == keyboard.KEY_DOWN:
+                self.moving_the_player(key)
+            else:
+                continue
+            self.update_parametrs()
             self.handle_events()
-            self.update()
             self.render()
             self.clock.tick(60)  # Set the frame rate to 60 FPS
 
-        pygame.quit()
-        sys.exit()
-
 
 game = Game()
-game.menu()
+game.start_game()
 exit()

@@ -21,18 +21,18 @@ class Field():
         self.anthills = []
         self.cells = []
         self.ants = []
-        self.quantity_ants = 0
+        self.quantity_ants = 1
         self.score_points = 0
         self.player = Player((variables.ROWS//2)+1, (variables.COLS//2)+1)
 
-    def creating_a_field(self) -> None:
+    def creating_a_field(self, cell_surf) -> None:
         """создание поля"""
         for _ in range(variables.ROWS):
             row = [0] * self.cols
             self.cells.append(row)
         for y in range(self.rows):
             for x in range(self.cols):
-                cell = Cell(y+1, x+1)
+                cell = Cell(y+1, x+1, cell_surf)
                 self.cells[y][x] = cell
 
     def get_empty_cells(self, game) -> None:
@@ -41,7 +41,7 @@ class Field():
         for row in self.cells:
             for cell in row:
                 cell.cell_updater(game=game)
-                if cell.content == cell.img:
+                if cell.content == variables.IMG_CELL:
                     self.empty_cells.append(cell)
 
     def create_anthills(self, game) -> None:
@@ -74,11 +74,11 @@ class Cell():
     клеток в игре ROWS*COLS
     клетка может обновиться, знает что в ней лежит
     """
-    def __init__(self, y=int, x=int) -> None:
+    def __init__(self, y, x, cell_surf) -> None:
         self.y = y
         self.x = x
         self.content = None
-        self.img = variables.IMG_CELL
+        self.img = cell_surf
 
     def cell_updater(self, game) -> None:
         """обновление внутреклеточного контента и картинки"""
@@ -97,7 +97,7 @@ class Cell():
                         else:
                             self.content = ant.img
         if not self.content:
-            self.content = self.img
+            self.content = variables.IMG_CELL
 
 
 # FIXME: AttributeError: 'int' object has no attribute 'cell_updater' s43
