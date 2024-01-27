@@ -19,14 +19,14 @@ class Game():
     def __init__(self) -> None:
         pygame.init()
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        self.screen
         pygame.display.set_caption("Pygame OOP Template")
         self.clock = pygame.time.Clock()
         self.tableofrecord = TableOfRecords(filename='records.txt')
         self.screen_width = pygame.display.get_surface().get_size()[0]
         self.screen_height = pygame.display.get_surface().get_size()[1]
-        self.cell_size = min(self.screen_width//variables.ROWS, self.screen_height//variables.COLS)
+        self.cell_size = 64
         self.cell_surf = pygame.Surface((self.cell_size, self.cell_size))
+        self.font = pygame.font.Font(None, 300)
 
     def menu(self) -> None:
         """Меню игры"""
@@ -114,28 +114,28 @@ class Game():
 
     def moving_the_player(self, key) -> None:
         """движение игрока при помощи кнопок"""
-        list_of_coordinatess = []
+        list_of_coords = []
         for anthill in self.field.anthills:
             tx = str(anthill.x)
             ty = str(anthill.y)
-            list_of_coordinatess.append(tx+ty)
+            list_of_coords.append(tx+ty)
         current_y = self.field.player.y
         current_x = self.field.player.x
         if key.name == variables.BUTTONS[1]:
             if current_x != variables.COLS:
-                if not (str(current_x+1)+str(current_y) in list_of_coordinatess):
+                if not (str(current_x+1)+str(current_y) in list_of_coords):
                     current_x += 1
         elif key.name == variables.BUTTONS[2]:
             if current_x != 1:
-                if not (str(current_x-1)+str(current_y) in list_of_coordinatess):
+                if not (str(current_x-1)+str(current_y) in list_of_coords):
                     current_x -= 1
         elif key.name == variables.BUTTONS[3]:
             if current_y != 1:
-                if not (str(current_x)+str(current_y-1) in list_of_coordinatess):
+                if not (str(current_x)+str(current_y-1) in list_of_coords):
                     current_y -= 1
         elif key.name == variables.BUTTONS[4]:
             if current_y != variables.ROWS:
-                if not (str(current_x)+str(current_y+1) in list_of_coordinatess):
+                if not (str(current_x)+str(current_y+1) in list_of_coords):
                     current_y += 1
         elif key.name == variables.BUTTONS[5]:
             self.game_run = False
@@ -234,10 +234,14 @@ class Game():
             for cell in row:
                 cell.img.fill(cell.content)
                 self.screen.blit(
-                    self.cell_surf, (cell.x*self.cell_size+((self.screen_width-(self.cell_size*variables.COLS)-(cell.x*self.cell_size//10))//2)+(cell.x*self.cell_size//10), cell.y*self.cell_size+((self.screen_height-(self.cell_size*variables.ROWS)-(cell.y*self.cell_size//10))//2)+(cell.y*self.cell_size//10)))
+                    self.cell_surf, (
+                        cell.x*self.cell_size+(cell.x*self.cell_size//8)+200,
+                        cell.y*self.cell_size+(cell.y*self.cell_size//8)+85
+                                    )
+                                )
 
     def render(self):
-        self.screen.fill((10, 43, 25))
+        self.screen.fill((50, 83, 55))
         self.render_cell()
         pygame.display.flip()
 
@@ -252,14 +256,15 @@ class Game():
         self.field.create_anthills(self)
         self.full_verification()
         self.update_parametrs()
+        self.render()
         while self.game_run:
-            print(self.field.anthills)
-            """
+            text = self.font.render(f'вы съели {self.field.score_points}/{len(self.field.ants)} муравьев', True, (200, 150, 200))
+            self.screen.blit(text, (100, 500))
             if len(self.field.ants) <= 0:
                 # self.end_the_game()
                 self.game_run = False
                 pygame.quit()
-                break"""
+                break
             key = keyboard.read_event()
             if key.event_type == keyboard.KEY_DOWN:
                 self.moving_the_player(key)

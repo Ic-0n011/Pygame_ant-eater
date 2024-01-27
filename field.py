@@ -55,7 +55,7 @@ class Field():
 
     def find_free_nearby_cells(self, game, x, y) -> list:
         """поиск рядом находящихся пустых клеток"""
-        list_of_coordinatess = []
+        list_of_coords = []
         allowed_x = [x, x-1, x+1]
         allowed_y = [y, y-1, y+1]
         for row in self.cells:
@@ -64,8 +64,8 @@ class Field():
                     if not (x == cell.x and y == cell.y):
                         cell.cell_updater(game)
                         if cell.content == variables.IMG_CELL:
-                            list_of_coordinatess.append(cell)
-        return list_of_coordinatess
+                            list_of_coords.append(cell)
+        return list_of_coords
 
 
 class Cell():
@@ -98,6 +98,3 @@ class Cell():
                             self.content = ant.img
         if not self.content:
             self.content = variables.IMG_CELL
-
-
-# FIXME: AttributeError: 'int' object has no attribute 'cell_updater' s43
