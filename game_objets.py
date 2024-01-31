@@ -18,8 +18,8 @@ class Ant(GameObject):
     """
     класс муравей
     """
-    def __init__(self, y, x) -> None:
-        self.img = variables.IMG_ANT
+    def __init__(self, y, x, img) -> None:
+        self.img = img
         super().__init__(y, x, img=self.img)
 
     def moving(self, game) -> None:
@@ -55,8 +55,8 @@ class Anthill(GameObject):
     муравейник знает сколько в нем муравьев
     спавнит одного муравья за ход если они остались в нутри
     """
-    def __init__(self, y, x) -> None:
-        self.img = variables.IMG_ANTHILL
+    def __init__(self, y, x, img) -> None:
+        self.img = img
         self.ants_inside = randint(1, 10)
         super().__init__(y, x, img=self.img)
 
@@ -67,7 +67,7 @@ class Anthill(GameObject):
                 game, self.x, self.y)
             if closest_free_cells:
                 temporary_cell = choice(closest_free_cells)
-                ant = Ant(temporary_cell.y, temporary_cell.x)
+                ant = Ant(temporary_cell.y, temporary_cell.x, game.img_ant)
                 game.field.ants.append(ant)
                 self.ants_inside -= 1
 
@@ -76,6 +76,6 @@ class Player(GameObject):
     """
     класс игрок
     """
-    def __init__(self, y, x) -> None:
-        self.img = variables.IMG_PLAYER
+    def __init__(self, y, x, img) -> None:
+        self.img = img
         super().__init__(y, x, img=self.img)

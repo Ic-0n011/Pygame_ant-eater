@@ -20,13 +20,17 @@ class Game():
         pygame.init()
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         pygame.display.set_caption("Pygame OOP Template")
+        self.img_player = pygame.image.load('assert/ant-eater.png')
+        self.img_ant = pygame.image.load('assert/ant.png')
+        self.img_anthill = pygame.image.load('assert/anthill.png')
         self.clock = pygame.time.Clock()
         self.tableofrecord = TableOfRecords(filename='records.txt')
         self.screen_width = pygame.display.get_surface().get_size()[0]
         self.screen_height = pygame.display.get_surface().get_size()[1]
         self.cell_size = 64
         self.cell_surf = pygame.Surface((self.cell_size, self.cell_size))
-        self.font = pygame.font.Font(None, 300)
+        self.font = pygame.font.Font(variables.FONT, 30)
+        # self.music = pygame.mixer.music.load('assert/myMuzic')
 
     def menu(self) -> None:
         """Меню игры"""
@@ -232,34 +236,43 @@ class Game():
     def render_cell(self):
         for row in self.field.cells:
             for cell in row:
-                cell.img.fill(cell.content)
+                cell.img.fill(variables.IMG_CELL)
                 self.screen.blit(
                     self.cell_surf, (
                         cell.x*self.cell_size+(cell.x*self.cell_size//8)+200,
                         cell.y*self.cell_size+(cell.y*self.cell_size//8)+85
                                     )
                                 )
+                if not cell.content == variables.IMG_CELL:
+                    self.screen.blit(
+                        cell.content,
+                        (
+                         cell.x*self.cell_size+(cell.x*self.cell_size//8)+200,
+                         cell.y*self.cell_size+(cell.y*self.cell_size//8)+85
+                        )
+                                    )
 
     def render(self):
         self.screen.fill((50, 83, 55))
         self.render_cell()
+        text = self.font.render(
+            f'вы съели {self.field.score_points} муравьев',
+            True,
+            (200, 150, 200)
+                                )
+        self.screen.blit(text, (self.screen_width//2-175, 50))
         pygame.display.flip()
-
-    def pygame_quit():
-        pygame.quit()
 
     def start_game(self) -> None:
         """подготовка и начало игры"""
-        self.field = Field()
+        self.field = Field(self.img_player)
         self.game_run = True
         self.field.creating_a_field(cell_surf=self.cell_surf)
         self.field.create_anthills(self)
-        self.full_verification()
+        # self.full_verification()
         self.update_parametrs()
         self.render()
         while self.game_run:
-            text = self.font.render(f'вы съели {self.field.score_points}/{len(self.field.ants)} муравьев', True, (200, 150, 200))
-            self.screen.blit(text, (100, 500))
             if len(self.field.ants) <= 0:
                 # self.end_the_game()
                 self.game_run = False

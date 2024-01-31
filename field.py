@@ -15,15 +15,18 @@ class Field():
     муравьев
     игрока(муравьеда)
     """
-    def __init__(self) -> None:
+    def __init__(self, img) -> None:
         self.rows = variables.ROWS
         self.cols = variables.COLS
+        self.img_player = img
         self.anthills = []
         self.cells = []
         self.ants = []
         self.quantity_ants = 1
         self.score_points = 0
-        self.player = Player((variables.ROWS//2)+1, (variables.COLS//2)+1)
+        self.player = Player(
+            (variables.ROWS//2)+1, (variables.COLS//2)+1, self.img_player
+                            )
 
     def creating_a_field(self, cell_surf) -> None:
         """создание поля"""
@@ -49,7 +52,7 @@ class Field():
         self.get_empty_cells(game)
         random_empty_cell = sample(self.empty_cells, QUANTITY_ANTHILLS)
         for cell in random_empty_cell:
-            anthill = Anthill(cell.y, cell.x)
+            anthill = Anthill(cell.y, cell.x, game.img_anthill)
             self.anthills.append(anthill)
             self.quantity_ants += anthill.ants_inside
 
