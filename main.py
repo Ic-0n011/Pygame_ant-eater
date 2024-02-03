@@ -7,6 +7,7 @@ from field import Field
 from Table_of_Record import TableOfRecords
 import string
 import pygame
+import test
 
 ALPHABET = string.ascii_uppercase
 
@@ -30,7 +31,8 @@ class Game():
         self.cell_size = 64
         self.cell_surf = pygame.Surface((self.cell_size, self.cell_size))
         self.font = pygame.font.Font(variables.FONT, 30)
-        # self.music = pygame.mixer.music.load('assert/myMuzic')
+        self.sound = pygame.mixer.Sound('eating.wav')
+        test.start_muzic()
 
     def menu(self) -> None:
         """Меню игры"""
